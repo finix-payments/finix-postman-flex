@@ -1,0 +1,20 @@
+version: 2.1
+
+orbs:
+  newman: postman/newman@0.0.2
+
+jobs:
+  Finix-Flex-API-Collection:
+    executor: newman/postman-newman-docker
+    steps:
+      - checkout
+      - newman/newman-run:
+          collection: "./Finix-Flex-API-Collection.postman_collection.json"
+          environment: "./Finix-Flex-API-Environment.postman_environment.json"
+          additional-options: -r cli,junit
+
+workflows:
+  version: 2
+  run_Finix-Flex-API-Collection:
+    jobs:
+      - Finix-Core-API-Collection
