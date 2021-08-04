@@ -17,4 +17,4 @@ workflows:
   version: 2
   run_Finix-Flex-API-Collection:
     jobs:
-      - Finix-Core-API-Collection
+      - Finix-Flex-API-Collection
