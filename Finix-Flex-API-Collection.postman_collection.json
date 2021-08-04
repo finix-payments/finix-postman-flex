@@ -1,0 +1,884 @@
+{
+	"info": {
+		"_postman_id": "e3a9e6db-5397-4b92-b92f-e583b00aab76",
+		"name": "Finix-Flex-API-Collection",
+		"description": "# Finix Flex API Collection\n\nThis Postman Collection includes the following  collections:\n\n- [Getting Started Guide](https://flex.finixpayments.com/#getting-started)\n- [Onboard a merchant](https://flex.finixpayments.com/#step-1-create-an-identity-for-a-merchant)\n- [Create a card sale](https://flex.finixpayments.com/#step-4-create-an-identity-for-a-buyer)\n- [Updating a Merchant Identity](https://flex.finixpayments.com/#update-an-identity)\n\nUse the __Finix Flex API Environment__ to set the appropriate credentials.\n\nIf you are facing any issues with the credentials, you can reach out to your Sales Engineer or use the credentials available [here](https://flex.finixpayments.com/#authentication).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Getting Started Guide",
+			"item": [
+				{
+					"name": "Step 1: Create an Identity for a Merchant",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseInJson = JSON.parse(responseBody);",
+									"pm.environment.set(\"identity\", responseInJson.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"tags\": {\n          \"Studio Rating\": \"4.7\"\n        }, \n        \"entity\": {\n          \"last_name\": \"Sunkhronos\", \n          \"max_transaction_amount\": 12000000, \n          \"has_accepted_credit_cards_previously\": true, \n          \"default_statement_descriptor\": \"Pollos Hermanos\", \n          \"personal_address\": {\n              \"city\": \"San Mateo\", \n              \"country\": \"USA\", \n              \"region\": \"CA\", \n              \"line2\": \"Apartment 7\", \n              \"line1\": \"741 Douglass St\", \n              \"postal_code\": \"94114\"\n          }, \n          \"incorporation_date\": {\n              \"year\": 1978, \n              \"day\": 27, \n              \"month\": 6\n          }, \n          \"business_address\": {\n              \"city\": \"San Mateo\", \n              \"country\": \"USA\", \n              \"region\": \"CA\", \n              \"line2\": \"Apartment 8\", \n              \"line1\": \"741 Douglass St\", \n              \"postal_code\": \"94114\"\n          }, \n          \"ownership_type\": \"PRIVATE\", \n          \"first_name\": \"dwayne\", \n          \"title\": \"CEO\", \n          \"business_tax_id\": \"123456789\", \n          \"doing_business_as\": \"Pollos Hermanos\", \n          \"principal_percentage_ownership\": 50, \n          \"email\": \"user@example.org\", \n          \"mcc\": \"0742\", \n          \"phone\": \"1234567890\", \n          \"business_name\": \"Pollos Hermanos\", \n          \"tax_id\": \"123456789\", \n          \"business_type\": \"INDIVIDUAL_SOLE_PROPRIETORSHIP\", \n          \"business_phone\": \"+1 (408) 756-4497\", \n          \"dob\": {\n              \"year\": 1978, \n              \"day\": 27, \n              \"month\": 6\n          }, \n          \"url\": \"www.PollosHermanos.com\", \n          \"annual_card_volume\": 12000000\n        },\n        \"additional_underwriting_data\":{\n          \"average_card_transfer_amount\":200000,\n          \"average_ach_transfer_amount\":200000,\n          \"annual_ach_volume\":200000,\n          \"business_description\":\"SB3 vegan cafe\",\n          \"credit_check_ip_address\":\"42.1.1.113\",\n          \"credit_check_timestamp\":\"2021-04-28T16:42:55Z\",\n          \"credit_check_allowed\":true,\n          \"credit_check_user_agent\":\"Mozilla 5.0(Macintosh; IntelMac OS X 10 _14_6)\",\n          \"merchant_agreement_accepted\":true,\n          \"merchant_agreement_ip_address\":\"42.1.1.113\",\n          \"merchant_agreement_timestamp\":\"2021-04-28T16:42:55Z\",\n          \"merchant_agreement_user_agent\":\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6)\",\n          \"refund_policy\":\"MERCHANDISE_EXCHANGE_ONLY\",\n          \"card_volume_distribution\":{\n              \"card_present_percentage\":30,\n              \"ecommerce_percentage\":60,\n              \"mail_order_telephone_order_percentage\":10\n          },\n          \"volume_distribution_by_business_type\": {\n              \"business_to_business_volume_percentage\": 100,\n              \"business_to_consumer_volume_percentage\": 0,\n              \"person_to_person_volume_percentage\": 0,\n              \"consumer_to_consumer_volume_percentage\": 0\n          }\n        }\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sandboxAPI}}/identities",
+							"host": [
+								"{{sandboxAPI}}"
+							],
+							"path": [
+								"identities"
+							]
+						},
+						"description": "Let’s start with the first step by creating an Identity resource. Each Identity represents either a person or a business. We use this resource to associate cards and payouts. This structure makes it simple to manage and reconcile payment instruments and payout history. Accounting of funds is done using the Identity so it’s recommended to have an Identity per recipient of funds. Additionally, the Identity resource is optionally used to collect KYC information.\n\nYou’ll want to store the ID of the newly created Identity resource for reference later."
+					},
+					"response": []
+				},
+				{
+					"name": "Step 2: Tokenize a Bank Account for Funding your Merchant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"account_type\": \"SAVINGS\",\n    \"name\": \"Alice\",\n    \"tags\": {\n        \"Bank Account\": \"Company Account\"\n    },\n    \"country\": \"USA\",\n    \"bank_code\": \"123123123\",\n    \"account_number\": \"123123123\",\n    \"type\": \"BANK_ACCOUNT\",\n    \"identity\": \"{{identity}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sandboxAPI}}/payment_instruments",
+							"host": [
+								"{{sandboxAPI}}"
+							],
+							"path": [
+								"payment_instruments"
+							]
+						},
+						"description": "Now that we’ve created an Identity for our merchant, we’ll need to add a bank account where funds will be disbursed (i.e. their funding account).\n\nIn the API, bank accounts – as well as credit cards – are represented by the Payment Instrument resource.\n\nTo classify the Payment Instrument as a bank account you’ll need to pass BANK_ACCOUNT in the type field of your request, and you’ll also want to pass the ID of the Identity that you created in the last step via the identity field to properly associate it with your merchant."
+					},
+					"response": []
+				},
+				{
+					"name": "Step 3: Provision Merchant Account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseInJson = JSON.parse(responseBody);",
+									"pm.environment.set(\"merchantId\", responseInJson.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tags\": {\n        \"key_2\": \"value_2\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sandboxAPI}}/identities/{{identity}}/merchants",
+							"host": [
+								"{{sandboxAPI}}"
+							],
+							"path": [
+								"identities",
+								"{{identity}}",
+								"merchants"
+							]
+						},
+						"description": "Now that we’ve associated a Payment Instrument with our seller’s Identity we’re ready to provision a Merchant account. This is the last step before you can begin processing on their behalf. Luckily you’ve already done most of the heavy lifting. Just make one final POST request, and you’ll be returned a Merchant resource. Take a second to inspect this newly created resource, particularly the onboarding_state, which can have 3 potential states that indicate its ability to process and settle funds:\n\nPROVISIONING: Request is pending (state will typically change after two minutes)\n\nprocessing_enabled: False\nsettlement_enabled: False\nAPPROVED: Merchant has been approved and can begin processing\n\nprocessing_enabled: True\nsettlement_enabled: True\nREJECTED: Merchant was rejected by the processor either because the information collected was invalid or it failed one of a number of regulatory and/or compliance checks (e.g. KYC, OFAC or MATCH)\n\nprocessing_enabled: False\nsettlement_enabled: False"
+					},
+					"response": []
+				},
+				{
+					"name": "Step 4: Create an Identity for a Buyer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseInJson = JSON.parse(responseBody);",
+									"pm.environment.set(\"buyerId\", responseInJson.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tags\": {\n        \"key\": \"value\"\n    },\n    \"entity\": {\n        \"phone\": \"7145677613\",\n        \"first_name\": \"Bob\",\n        \"last_name\": \"Diaz\",\n        \"email\": \"therock@gmail.com\",\n        \"personal_address\": {\n            \"city\": \"San Mateo\",\n            \"country\": \"USA\",\n            \"region\": \"CA\",\n            \"line2\": \"Apartment 7\",\n            \"line1\": \"741 Douglass St\",\n            \"postal_code\": \"94114\"\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sandboxAPI}}/identities",
+							"host": [
+								"{{sandboxAPI}}"
+							],
+							"path": [
+								"identities"
+							]
+						},
+						"description": "Now that we have successfully provisioned a Merchant we’ll need to create an Identity that represents your buyer. Don’t worry though you won’t need to capture the same amount of information from your buyer."
+					},
+					"response": []
+				},
+				{
+					"name": "Step 5: Tokenize a Card",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseInJson = JSON.parse(responseBody);",
+									"pm.environment.set(\"paymentInstrumentId\", responseInJson.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Ayisha Kline\",\n    \"expiration_year\": 2029,\n    \"tags\": {\n        \"card_name\": \"Business Card\"\n    },\n    \"number\": \"4895142232120006\",\n    \"expiration_month\": 3,\n    \"address\": {\n        \"city\": \"San Francisco\",\n        \"region\": \"CA\",\n        \"postal_code\": \"94404\",\n        \"line1\": \"900 Metro Center Blv\",\n        \"country\": \"USA\"\n    },\n    \"security_code\": \"022\",\n    \"type\": \"PAYMENT_CARD\",\n    \"identity\": \"{{buyerId}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sandboxAPI}}/payment_instruments",
+							"host": [
+								"{{sandboxAPI}}"
+							],
+							"path": [
+								"payment_instruments"
+							]
+						},
+						"description": "Now that we have an Identity resource representing our buyer, we’ll need to create a Payment Instrument which represents the credit card you’ll be debiting (i.e. charging)."
+					},
+					"response": []
+				},
+				{
+					"name": "Step 6: Create Sale",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseInJson = JSON.parse(responseBody);",
+									"pm.environment.set(\"transferId\", responseInJson.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"merchant\": \"{{merchantId}}\",\n    \"currency\": \"USD\",\n    \"amount\": 2995,\n    \"source\": \"{{paymentInstrumentId}}\",\n    \"tags\": {\n        \"test\": \"sale\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sandboxAPI}}/transfers",
+							"host": [
+								"{{sandboxAPI}}"
+							],
+							"path": [
+								"transfers"
+							]
+						},
+						"description": "Next you’ll need to create a Transfer. To generate a Transfer we’ll supply the buyer’s Payment Instrument ID as the source field and the seller’s Merchant ID in the merchant field. Note that the amount field is in cents. These specific Transfers are distinguished by their type which return DEBIT."
+					},
+					"response": []
+				}
+			],
+			"description": "The __Getting Started Guide__ will walk through the 6 steps is takes to Onboard a Merchant and then create a Card sale against that merchant.\n\nNote: Step 3 (Provision Merchant Account) includes a 90 second delay to account for the asynchronous approval of the Merchant Account with the processor.\n\n- [Getting Started Guide](https://flex.finixpayments.com/#getting-started)",
+			"auth": {
+				"type": "basic",
+				"basic": [
+					{
+						"key": "password",
+						"value": "{{rolePartnerPassword}}",
+						"type": "string"
+					},
+					{
+						"key": "username",
+						"value": "{{rolePartnerUsername}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Merchant Onboarding",
+			"item": [
+				{
+					"name": "Step 1: Create an Identity for a Merchant",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseInJson = JSON.parse(responseBody);",
+									"pm.environment.set(\"identity\", responseInJson.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"tags\": {\n          \"Studio Rating\": \"4.7\"\n        }, \n        \"entity\": {\n          \"last_name\": \"Sunkhronos\", \n          \"max_transaction_amount\": 12000000, \n          \"has_accepted_credit_cards_previously\": true, \n          \"default_statement_descriptor\": \"Pollos Hermanos\", \n          \"personal_address\": {\n              \"city\": \"San Mateo\", \n              \"country\": \"USA\", \n              \"region\": \"CA\", \n              \"line2\": \"Apartment 7\", \n              \"line1\": \"741 Douglass St\", \n              \"postal_code\": \"94114\"\n          }, \n          \"incorporation_date\": {\n              \"year\": 1978, \n              \"day\": 27, \n              \"month\": 6\n          }, \n          \"business_address\": {\n              \"city\": \"San Mateo\", \n              \"country\": \"USA\", \n              \"region\": \"CA\", \n              \"line2\": \"Apartment 8\", \n              \"line1\": \"741 Douglass St\", \n              \"postal_code\": \"94114\"\n          }, \n          \"ownership_type\": \"PRIVATE\", \n          \"first_name\": \"dwayne\", \n          \"title\": \"CEO\", \n          \"business_tax_id\": \"123456789\", \n          \"doing_business_as\": \"Pollos Hermanos\", \n          \"principal_percentage_ownership\": 50, \n          \"email\": \"user@example.org\", \n          \"mcc\": \"0742\", \n          \"phone\": \"1234567890\", \n          \"business_name\": \"Pollos Hermanos\", \n          \"tax_id\": \"123456789\", \n          \"business_type\": \"INDIVIDUAL_SOLE_PROPRIETORSHIP\", \n          \"business_phone\": \"+1 (408) 756-4497\", \n          \"dob\": {\n              \"year\": 1978, \n              \"day\": 27, \n              \"month\": 6\n          }, \n          \"url\": \"www.PollosHermanos.com\", \n          \"annual_card_volume\": 12000000\n        },\n        \"additional_underwriting_data\":{\n          \"average_card_transfer_amount\":200000,\n          \"average_ach_transfer_amount\":200000,\n          \"annual_ach_volume\":200000,\n          \"business_description\":\"SB3 vegan cafe\",\n          \"credit_check_ip_address\":\"42.1.1.113\",\n          \"credit_check_timestamp\":\"2021-04-28T16:42:55Z\",\n          \"credit_check_allowed\":true,\n          \"credit_check_user_agent\":\"Mozilla 5.0(Macintosh; IntelMac OS X 10 _14_6)\",\n          \"merchant_agreement_accepted\":true,\n          \"merchant_agreement_ip_address\":\"42.1.1.113\",\n          \"merchant_agreement_timestamp\":\"2021-04-28T16:42:55Z\",\n          \"merchant_agreement_user_agent\":\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6)\",\n          \"refund_policy\":\"MERCHANDISE_EXCHANGE_ONLY\",\n          \"card_volume_distribution\":{\n              \"card_present_percentage\":30,\n              \"ecommerce_percentage\":60,\n              \"mail_order_telephone_order_percentage\":10\n          },\n          \"volume_distribution_by_business_type\": {\n              \"business_to_business_volume_percentage\": 100,\n              \"business_to_consumer_volume_percentage\": 0,\n              \"person_to_person_volume_percentage\": 0,\n              \"consumer_to_consumer_volume_percentage\": 0\n          }\n        }\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sandboxAPI}}/identities",
+							"host": [
+								"{{sandboxAPI}}"
+							],
+							"path": [
+								"identities"
+							]
+						},
+						"description": "Let’s start with the first step by creating an Identity resource. Each Identity represents either a person or a business. We use this resource to associate cards and payouts. This structure makes it simple to manage and reconcile payment instruments and payout history. Accounting of funds is done using the Identity so it’s recommended to have an Identity per recipient of funds. Additionally, the Identity resource is optionally used to collect KYC information.\n\nYou’ll want to store the ID of the newly created Identity resource for reference later."
+					},
+					"response": []
+				},
+				{
+					"name": "Step 2: Tokenize a Bank Account for Funding your Merchant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"account_type\": \"SAVINGS\",\n    \"name\": \"Alice\",\n    \"tags\": {\n        \"Bank Account\": \"Company Account\"\n    },\n    \"country\": \"USA\",\n    \"bank_code\": \"123123123\",\n    \"account_number\": \"123123123\",\n    \"type\": \"BANK_ACCOUNT\",\n    \"identity\": \"{{identity}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sandboxAPI}}/payment_instruments",
+							"host": [
+								"{{sandboxAPI}}"
+							],
+							"path": [
+								"payment_instruments"
+							]
+						},
+						"description": "Now that we’ve created an Identity for our merchant, we’ll need to add a bank account where funds will be disbursed (i.e. their funding account).\n\nIn the API, bank accounts – as well as credit cards – are represented by the Payment Instrument resource.\n\nTo classify the Payment Instrument as a bank account you’ll need to pass BANK_ACCOUNT in the type field of your request, and you’ll also want to pass the ID of the Identity that you created in the last step via the identity field to properly associate it with your merchant."
+					},
+					"response": []
+				},
+				{
+					"name": "Step 3: Provision Merchant Account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseInJson = JSON.parse(responseBody);",
+									"pm.environment.set(\"merchantId\", responseInJson.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tags\": {\n        \"key_2\": \"value_2\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sandboxAPI}}/identities/{{identity}}/merchants",
+							"host": [
+								"{{sandboxAPI}}"
+							],
+							"path": [
+								"identities",
+								"{{identity}}",
+								"merchants"
+							]
+						},
+						"description": "Now that we’ve associated a Payment Instrument with our seller’s Identity we’re ready to provision a Merchant account. This is the last step before you can begin processing on their behalf. Luckily you’ve already done most of the heavy lifting. Just make one final POST request, and you’ll be returned a Merchant resource. Take a second to inspect this newly created resource, particularly the onboarding_state, which can have 3 potential states that indicate its ability to process and settle funds:\n\nPROVISIONING: Request is pending (state will typically change after two minutes)\n\nprocessing_enabled: False\nsettlement_enabled: False\nAPPROVED: Merchant has been approved and can begin processing\n\nprocessing_enabled: True\nsettlement_enabled: True\nREJECTED: Merchant was rejected by the processor either because the information collected was invalid or it failed one of a number of regulatory and/or compliance checks (e.g. KYC, OFAC or MATCH)\n\nprocessing_enabled: False\nsettlement_enabled: False"
+					},
+					"response": []
+				}
+			],
+			"description": "The __Merchant Onboarding__ will walk through the 3 steps is takes to Onboard a Merchant by API\n\n- [Onboard a merchant](https://flex.finixpayments.com/#step-1-create-an-identity-for-a-merchant)",
+			"auth": {
+				"type": "basic",
+				"basic": [
+					{
+						"key": "password",
+						"value": "{{rolePartnerPassword}}",
+						"type": "string"
+					},
+					{
+						"key": "username",
+						"value": "{{rolePartnerUsername}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Create a Sale using a Card",
+			"item": [
+				{
+					"name": "Create an Identity for a Buyer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseInJson = JSON.parse(responseBody);",
+									"pm.environment.set(\"buyerId\", responseInJson.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tags\": {\n        \"key\": \"value\"\n    },\n    \"entity\": {\n        \"phone\": \"7145677613\",\n        \"first_name\": \"Bob\",\n        \"last_name\": \"Diaz\",\n        \"email\": \"therock@gmail.com\",\n        \"personal_address\": {\n            \"city\": \"San Mateo\",\n            \"country\": \"USA\",\n            \"region\": \"CA\",\n            \"line2\": \"Apartment 7\",\n            \"line1\": \"741 Douglass St\",\n            \"postal_code\": \"94114\"\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sandboxAPI}}/identities",
+							"host": [
+								"{{sandboxAPI}}"
+							],
+							"path": [
+								"identities"
+							]
+						},
+						"description": "Create an Identity that represents your buyer."
+					},
+					"response": []
+				},
+				{
+					"name": "Tokenize a Card",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseInJson = JSON.parse(responseBody);",
+									"pm.environment.set(\"paymentInstrumentId\", responseInJson.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Ayisha Kline\",\n    \"expiration_year\": 2029,\n    \"tags\": {\n        \"card_name\": \"Business Card\"\n    },\n    \"number\": \"4895142232120006\",\n    \"expiration_month\": 3,\n    \"address\": {\n        \"city\": \"San Francisco\",\n        \"region\": \"CA\",\n        \"postal_code\": \"94404\",\n        \"line1\": \"900 Metro Center Blv\",\n        \"country\": \"USA\"\n    },\n    \"security_code\": \"022\",\n    \"type\": \"PAYMENT_CARD\",\n    \"identity\": \"{{buyerId}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sandboxAPI}}/payment_instruments",
+							"host": [
+								"{{sandboxAPI}}"
+							],
+							"path": [
+								"payment_instruments"
+							]
+						},
+						"description": "Create a Payment Instrument which represents the credit card you’ll be debiting (i.e. charging)."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Sale",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseInJson = JSON.parse(responseBody);",
+									"pm.environment.set(\"transferId\", responseInJson.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"merchant\": \"{{merchantId}}\",\n    \"currency\": \"USD\",\n    \"amount\": 2995,\n    \"source\": \"{{paymentInstrumentId}}\",\n    \"tags\": {\n        \"test\": \"sale\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sandboxAPI}}/transfers",
+							"host": [
+								"{{sandboxAPI}}"
+							],
+							"path": [
+								"transfers"
+							]
+						},
+						"description": "Next you’ll need to create a Transfer. To generate a Transfer we’ll supply the buyer’s Payment Instrument ID as the source field and the seller’s Merchant ID in the merchant field. Note that the amount field is in cents. These specific Transfers are distinguished by their type which return DEBIT."
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch a Transfer",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{sandboxAPI}}/transfers/{{transferId}}",
+							"host": [
+								"{{sandboxAPI}}"
+							],
+							"path": [
+								"transfers",
+								"{{transferId}}"
+							]
+						},
+						"description": "Fetch a previously created Sale/Transfer."
+					},
+					"response": []
+				}
+			],
+			"description": "Pre Requisite: You will need a merchant onboarded before you can create a sale. Refer to the Merchant Onboarding folder to create a new merchant.\n\n- [Onboard a merchant](https://flex.finixpayments.com/#step-1-create-an-identity-for-a-merchant)\n- [Create a card sale](https://flex.finixpayments.com/#step-4-create-an-identity-for-a-buyer)",
+			"auth": {
+				"type": "basic",
+				"basic": [
+					{
+						"key": "password",
+						"value": "{{rolePartnerPassword}}",
+						"type": "string"
+					},
+					{
+						"key": "username",
+						"value": "{{rolePartnerUsername}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Update Merchant Information",
+			"item": [
+				{
+					"name": "Fetch the identity associated to the Merchant",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{sandboxAPI}}/identities/{{identity}}",
+							"host": [
+								"{{sandboxAPI}}"
+							],
+							"path": [
+								"identities",
+								"{{identity}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update the identity associated to the Merchant",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"entity\": {\n        \"title\": \"CEO\",\n        \"first_name\": \"dwayne\",\n        \"last_name\": \"Sunkhronos\",\n        \"email\": \"user@example.org\",\n        \"business_name\": \"Dunder Mifflin\",\n        \"business_type\": \"INDIVIDUAL_SOLE_PROPRIETORSHIP\",\n        \"doing_business_as\": \"Dunder Mifflin\",\n        \"phone\": \"1234567890\",\n        \"business_phone\": \"+1 (408) 756-4497\",\n        \"personal_address\": {\n            \"line1\": \"741 Douglass St\",\n            \"line2\": \"Apartment 71\",\n            \"city\": \"San Mateo\",\n            \"region\": \"CA\",\n            \"postal_code\": \"94114\",\n            \"country\": \"USA\"\n        },\n        \"business_address\": {\n            \"line1\": \"123 Main St\",\n            \"line2\": \"Unit 1\",\n            \"city\": \"San Jose\",\n            \"region\": \"CA\",\n            \"postal_code\": \"95123\",\n            \"country\": \"USA\"\n        },\n        \"mcc\": \"0742\",\n        \"dob\": {\n            \"day\": 27,\n            \"month\": 6,\n            \"year\": 1978\n        },\n        \"max_transaction_amount\": 12000000,\n        \"amex_mid\": null,\n        \"discover_mid\": null,\n        \"url\": \"www.DunderMifflin.com\",\n        \"annual_card_volume\": 12000000,\n        \"has_accepted_credit_cards_previously\": true,\n        \"incorporation_date\": {\n            \"day\": 27,\n            \"month\": 6,\n            \"year\": 1978\n        },\n        \"principal_percentage_ownership\": 50,\n        \"short_business_name\": null,\n        \"ownership_type\": \"PRIVATE\",\n        \"tax_authority\": null,\n        \"tax_id_provided\": true,\n        \"business_tax_id_provided\": true,\n        \"default_statement_descriptor\": \"Dunder Mifflin\"\n    },\n    \"tags\": {\n        \"Studio Rating\": \"4.7\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sandboxAPI}}/identities/{{identity}}",
+							"host": [
+								"{{sandboxAPI}}"
+							],
+							"path": [
+								"identities",
+								"{{identity}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Identity information on the underlying processor.",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseInJson = JSON.parse(responseBody);",
+									"pm.environment.set(\"verificationId\", responseInJson.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sandboxAPI}}/merchants/{{merchantId}}/verifications",
+							"host": [
+								"{{sandboxAPI}}"
+							],
+							"path": [
+								"merchants",
+								"{{merchantId}}",
+								"verifications"
+							]
+						},
+						"description": "Update Identity information (e.g. Business Address) on the underlying processor."
+					},
+					"response": []
+				},
+				{
+					"name": "Check the status of the Update Identity information on underlying processor",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{sandboxAPI}}/merchants/{{merchantId}}/verifications",
+							"host": [
+								"{{sandboxAPI}}"
+							],
+							"path": [
+								"merchants",
+								"{{merchantId}}",
+								"verifications"
+							]
+						},
+						"description": "Check the verification status with the underlying processor."
+					},
+					"response": []
+				}
+			],
+			"description": "__Update Merchant Information__ Collection shows you how you can update Merchant Information.\n\n__Pre Requisite__ You should have a merchant identity created. To create and onboard a merchant, please run the __Merchant Onboarding__ collection.\n\n__Note__ that after the identity information is updated in Finix, to update the information with the underlying processor, you will need to update the merchant on the processor which is also documented in this collection.\n\n__Important__: The tax_id and business_tax_id fields cannot be updated. If either field was input incorrectly, create a new Identity resource.",
+			"auth": {
+				"type": "basic",
+				"basic": [
+					{
+						"key": "password",
+						"value": "{{rolePartnerPassword}}",
+						"type": "string"
+					},
+					{
+						"key": "username",
+						"value": "{{rolePartnerUsername}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "{{rolePartnerPassword}}",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "{{rolePartnerUsername}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
